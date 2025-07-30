@@ -51,4 +51,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // for Android Auto
+    implementation(libs.androidx.car.app)
+    implementation(libs.androidx.car.app.projected)
+    testImplementation(libs.androidx.car.app.testing)
 }
