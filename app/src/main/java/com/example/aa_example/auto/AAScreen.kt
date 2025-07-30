@@ -1,6 +1,7 @@
 package com.example.aa_example.auto
 
 import android.content.Context
+import android.content.Intent
 import android.location.LocationManager
 import android.text.SpannableString
 import android.text.Spanned
@@ -18,7 +19,9 @@ import androidx.car.app.model.PlaceListMapTemplate
 import androidx.car.app.model.PlaceMarker
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
+import androidx.core.net.toUri
 import com.example.aa_example.db.places
+import com.example.aa_example.model.PlaceInfo
 
 class AAScreen(carContext: CarContext) : Screen(carContext) {
 
@@ -42,6 +45,18 @@ class AAScreen(carContext: CarContext) : Screen(carContext) {
         } catch (e: Exception) {
             CarToast.makeText(carContext, "位置情報の取得に失敗しました。", CarToast.LENGTH_SHORT).show()
             fallbackLocation
+        }
+    }
+
+    private fun startNavigation(carContext: CarContext, place: PlaceInfo) {
+        try {
+            val uri = "geo:${place.latitude},${place.longitude}?q=${place.name}&mode=d".toUri()
+            val intent = Intent(CarContext.ACTION_NAVIGATE, uri)
+
+            carContext.startCarApp(intent)
+            CarToast.makeText(carContext, "${place.name}への案内を開始します", CarToast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            CarToast.makeText(carContext, "地図アプリを開けませんでした", CarToast.LENGTH_SHORT).show()
         }
     }
 
@@ -74,6 +89,7 @@ class AAScreen(carContext: CarContext) : Screen(carContext) {
                 )
                 .setTitle(place.name)
                 .addText(text)
+                .setOnClickListener { startNavigation(carContext = carContext, place = place) }
                 .build()
             itemListBuilder.addItem(row)
         }
